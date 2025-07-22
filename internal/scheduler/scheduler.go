@@ -112,7 +112,7 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 							tsunamiAlert = "Yes"
 						}
 						mapURL := fmt.Sprintf(config.BotConf.MapURL, data.Features[j].Geo.Coordinates[0], data.Features[j].Geo.Coordinates[1], data.Features[j].Geo.Coordinates[0], data.Features[j].Geo.Coordinates[1])
-						fmt.Println("mapurl", mapURL)
+
 						message := fmt.Sprintf(
 							`🌍 *Earthquake Alert\!* 🌍
 
@@ -165,7 +165,6 @@ func SendAlertToTelegram(chatId int64, message string) error {
 	}
 
 	body, err := json.Marshal(telegramMessage)
-	fmt.Println("hellooooo", string(body))
 	if err != nil {
 		log.Println("failed to marshal message:", err)
 		return err
@@ -206,7 +205,6 @@ func fetchLocation(m *model.Geometry) (*model.Address, error) {
 
 	openStreetMapDomain := config.BotConf.OpenstreetmapDomain
 	url := fmt.Sprintf("%s?format=jsonv2&lat=%f&lon=%f", openStreetMapDomain, m.Coordinates[1], m.Coordinates[0])
-	fmt.Println("URL for location fetching:", url)
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
