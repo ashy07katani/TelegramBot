@@ -22,18 +22,4 @@ type DBConfig struct {
 var BotConf *BotConfig
 var DBConf *DBConfig
 
-/*
 
-openstreetmapDomain=https://nominatim.openstreetmap.org/reverse
-telegramDomain=https://api.telegram.org
-botToken=7514104719:AAG11GRpGEzemBOUKq0lMKuujmMfuBrV-ms
-databaseName=Earthquake
-driverName=postgres
-postgresPort=5432
-postgresUserName=postgres
-postgresPassword=root
-postgresHost=localhost
-userTicker=15
-alertTicker=20
-
-*/

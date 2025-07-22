@@ -29,11 +29,6 @@ func PollAddUser(wg *sync.WaitGroup) {
 		case <-addUser.C:
 			log.Println("Fetching chatId from Telegram")
 			fetcher.FetchChatId()
-			//bData, err := json.Marshal(data)
-			// if err != nil {
-			// 	log.Println("Not able to marshall the response")
-			// }
-			//log.Println(string(bData))
 		}
 	}
 }
@@ -46,21 +41,13 @@ func PollingAlerts(wg *sync.WaitGroup) {
 		case <-ticker.C:
 			log.Println("Polling FetchEarthQuake function")
 			data := fetcher.FetchEarthQuake()
-			//bData, err := json.Marshal(data)
-			//alert := new(model.InsertAlertRequest)
 			user := repository.GetFromTelegramBot()
 			pollingAlertUtil(user, data)
-			// if err != nil {
-			// 	log.Println("Not able to marshall the response")
-			// 	return
-			// }
-			//log.Println(string(bData))
 		}
 	}
 }
 
 func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
-	// insert that logic of checking if the country is nil or not here
 
 	size := len(user)
 	dataSize := len(data.Features)
@@ -102,14 +89,11 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 				if country == addresses[j].CountryCode || country == "all" {
 
 					count, err := repository.GetAlertCount(data.Features[j].Id, user[i].ChatId)
-					//log.Println("count for the earthquake alert and chatId", count, err)
+
 					if err != nil {
 						log.Println("Not able to fetch count", err.Error())
 						return
 					} else if count == 0 {
-
-						// else check if the country is same as the one that we are fetching from the api. check based on the country code if same then send the update,
-						//if all is selected as country then skip the checking logic and send all the latest earthquakes
 						req := new(model.InsertAlertRequest)
 						req.ChatId = user[i].ChatId
 						req.EarthQuakeId = data.Features[j].Id
@@ -150,55 +134,12 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 							escapeMdV2(addresses[j].County),
 							escapeMdV2(addresses[j].Country),
 							escapeMdV2(fmt.Sprintf("%.2f", data.Features[j].Properties.Magnitude)),
-							escapeMdV2(formatted), // format: 2025-07-21 13:07:06 UTC
+							escapeMdV2(formatted),
 							escapeMdV2(fmt.Sprintf("%.2f", data.Features[j].Geo.Coordinates[2])),
 							escapeMdV2(tsunamiAlert),
-							mapURL, // DO NOT escape this
+							mapURL,
 						)
-						//log.Println("message to send", message)
 
-						// message := fmt.Sprintf(
-						// 	`🌍Earthquake Alert!🌍
-
-						// %s
-
-						// 📍Location: %s, %s, %s, %s
-						// 📏Magnitude: %.1f
-						// 🕒Time: %s
-						// 📡Depth: %.2f km
-						// 🌊🚨Tsunami Alert: %s
-
-						// 🗺️[Click here to view location] (%s)
-
-						// ⚠️Stay Safe:
-						// - Move to an open area away from buildings
-						// - Avoid elevators
-						// - Drop, Cover, and Hold On!`,
-						// 	strings.ToUpper(data.Features[j].Properties.Title),
-						// 	addresses[j].City, addresses[j].State, addresses[j].County, addresses[j].Country,
-						// 	data.Features[j].Properties.Magnitude, formatted,
-						// 	data.Features[j].Geo.Coordinates[2], tsunamiAlert,
-						// 	mapURL,
-						// )
-						// 						htmlMessage := fmt.Sprintf(
-						// 							`🌍 <b>Earthquake Alert!</b> 🌍<br><br>
-						// <b>%s</b>
-						// <b>Location:</b> %s, %s, %s, %s<br>
-						// <b>Magnitude:</b> %.1f<br>
-						// <b>Time:</b> %s<br>
-						// <b>Depth:</b> %.2f km<br>
-						// <b>Tsunami Alert:</b> %s<br><br>
-						// 🗺️ <a href="%s">Click here to view location</a><br><br>
-						// ⚠️ <b>Stay Safe:</b><br>
-						// - Move to an open area away from buildings<br>
-						// - Avoid elevators<br>
-						// - Drop, Cover, and Hold On!`,
-						// 							strings.ToUpper(data.Features[j].Properties.Title),
-						// 							addresses[j].City, addresses[j].State, addresses[j].County, addresses[j].Country,
-						// 							data.Features[j].Properties.Magnitude, formatted,
-						// 							data.Features[j].Geo.Coordinates[2], tsunamiAlert,
-						// 							mapURL,
-						// 						)
 						if err = SendAlertToTelegram(user[i].ChatId, message); err != nil {
 							log.Println("ERROR SENDING MESSAGE TO TELEGRAM", err.Error())
 							return
@@ -262,20 +203,18 @@ func SendAlertToTelegram(chatId int64, message string) error {
 }
 
 func fetchLocation(m *model.Geometry) (*model.Address, error) {
-	// Build URL
-	openStreetMapDomain := "https://nominatim.openstreetmap.org/reverse"
+
+	openStreetMapDomain := config.BotConf.OpenstreetmapDomain
 	url := fmt.Sprintf("%s?format=jsonv2&lat=%f&lon=%f", openStreetMapDomain, m.Coordinates[1], m.Coordinates[0])
 	fmt.Println("URL for location fetching:", url)
 
-	// Create HTTP request
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		log.Println("Error creating request:", err)
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "earthquake-alert/1.0") // Nominatim requires a User-Agent header
+	req.Header.Set("User-Agent", "earthquake-alert/1.0")
 
-	// Send request
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -284,15 +223,12 @@ func fetchLocation(m *model.Geometry) (*model.Address, error) {
 	}
 	defer resp.Body.Close()
 
-	// Read body
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Println("Error reading response body:", err)
 		return nil, err
 	}
-	//fmt.Println("Response from location fetch:", string(body))
 
-	// Parse JSON
 	var address model.GeoResponse
 	err = json.Unmarshal(body, &address)
 	if err != nil {
@@ -300,17 +236,12 @@ func fetchLocation(m *model.Geometry) (*model.Address, error) {
 		return nil, err
 	}
 
-	// Print and return address
-	// fmt.Println("County:", address.Address.County)
-	// fmt.Println("State:", address.Address.State)
-	// fmt.Println("Country:", address.Address.Country)
-
 	return &address.Address, nil
 }
 
 func SendKeyBoard(chatId int64) error {
 	botToken := config.BotConf.BotToken
-	//const telegramAPI = "https://api.telegram.org/bot" + botToken + "/sendMessage"
+
 	telegramAPI := fmt.Sprintf("%s%s/sendMessage", config.BotConf.TelegramDomain, botToken)
 	keyboard := model.InlineKeyBoardMarkup{
 		InlineKeyBoard: [][]model.InlineKeyBoardButton{

@@ -9,7 +9,6 @@ import (
 
 func ScheduleCleanupJob() {
 	c := cron.New()
-	//*/5 * * * *
 	_, err := c.AddFunc("0 0 * * *", func() {
 		err := repository.ClearAllUpdatesForADay()
 		if err != nil {

@@ -31,7 +31,7 @@ var countryNameMap = map[string]string{
 }
 
 func FetchEarthQuake() *model.Data {
-	//URL := "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
+	
 	URL := config.BotConf.USGSUrl
 	req, err := http.NewRequest(http.MethodGet, URL, nil)
 	if err != nil {
@@ -61,12 +61,10 @@ func FetchEarthQuake() *model.Data {
 	return data
 }
 
-// https://api.telegram.org/bot7514104719:AAG11GRpGEzemBOUKq0lMKuujmMfuBrV-ms/getUpdates
+
 func FetchChatId() *model.ChatUsers {
 
 	var URL = fmt.Sprintf("%s%s/getUpdates", config.BotConf.TelegramDomain, config.BotConf.BotToken)
-	//var URL = "https://api.telegram.org/bot7514104719:AAG11GRpGEzemBOUKq0lMKuujmMfuBrV-ms/getUpdates"
-
 	if update_id != -1 {
 		URL = fmt.Sprintf("%s%s/getUpdates?offset=%d", config.BotConf.TelegramDomain, config.BotConf.BotToken, update_id+1)
 	}
@@ -79,7 +77,6 @@ func FetchChatId() *model.ChatUsers {
 	res, err := ChatClient.Do(req)
 	if err != nil {
 		log.Println("error fetching the response")
-		//panic(fmt.Errorf("error fetching the response %s", err.Error()))
 		return nil
 	}
 	body, err := io.ReadAll(res.Body)
@@ -97,7 +94,6 @@ func FetchChatId() *model.ChatUsers {
 	}
 	size := len(data.Results)
 	for i := range size {
-		//log.Println(i, "i am peaceful")
 		if update_id < data.Results[i].UpdateId {
 			update_id = data.Results[i].UpdateId
 		}
@@ -105,7 +101,6 @@ func FetchChatId() *model.ChatUsers {
 			user := new(model.InsertBotUser)
 			user.UserName = data.Results[i].Msg.Chat.UserName
 			user.ChatId = data.Results[i].Msg.Chat.Id
-			//log.Println(user.ChatId, user.UserName)
 			if err := repository.InsertIntoTelegramBot(user); err != nil {
 				log.Println("error inserting the database")
 				panic(fmt.Sprintf("error inserting the record into database %s", err.Error()))
@@ -127,7 +122,6 @@ func FetchChatId() *model.ChatUsers {
 
 func SendMessageToTelegram(chatId int64, message string) error {
 	botToken := config.BotConf.BotToken
-	//const telegramAPI = "https://api.telegram.org/bot" + botToken + "/sendMessage"
 	telegramAPI := fmt.Sprintf("%s%s/sendMessage", config.BotConf.TelegramDomain, botToken)
 	telegramMessage := &model.TelegramMessage{
 		ChatID: chatId,
