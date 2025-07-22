@@ -24,7 +24,7 @@ const (
 
 func DBInit(config *config.DBConfig) (*sql.DB, error) {
 
-	driverSourceName := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", config.PostgresHost, config.PostgresPort, config.PostgresUserName, config.PostgresPassword, config.DatabaseName)
+	driverSourceName := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", config.PostgresHost, config.PostgresPort, config.PostgresUserName, config.PostgresPassword, config.DatabaseName, config.SSLMode)
 	DB, _ = sql.Open(config.DriverName, driverSourceName)
 	err := DB.Ping()
 	if err == nil {

@@ -17,9 +17,8 @@ type DBConfig struct {
 	PostgresUserName string `env:"postgresUserName"`
 	PostgresPassword string `env:"postgresPassword"`
 	PostgresHost     string `env:"postgresHost"`
+	SSLMode          string `env:"sslmode"`
 }
 
 var BotConf *BotConfig
 var DBConf *DBConfig
-
-
