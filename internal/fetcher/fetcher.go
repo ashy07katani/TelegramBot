@@ -27,11 +27,14 @@ var countryNameMap = map[string]string{
 	"in":  "India 🇮🇳",
 	"ir":  "Iran 🇮🇷",
 	"jp":  "Japan 🇯🇵",
+	"it":  "Italy 🇮🇹",
+	"id":  "Indonesia 🇮🇩",
+	"ru":  "Russia 🇷🇺",
 	"all": "🌍 The World",
 }
 
 func FetchEarthQuake() *model.Data {
-	
+
 	URL := config.BotConf.USGSUrl
 	req, err := http.NewRequest(http.MethodGet, URL, nil)
 	if err != nil {
@@ -60,7 +63,6 @@ func FetchEarthQuake() *model.Data {
 	}
 	return data
 }
-
 
 func FetchChatId() *model.ChatUsers {
 

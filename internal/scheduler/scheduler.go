@@ -253,6 +253,12 @@ func SendKeyBoard(chatId int64) error {
 			},
 			{
 				{Text: "🇯🇵 Japan", CallbackData: "jp"},
+				{Text: "🇮🇹 Italy", CallbackData: "it"},
+			},
+			{
+				{Text: "🇮🇩 Indonesia", CallbackData: "id"},
+				{Text: "🇷🇺 Russia", CallbackData: "ru"},
+			}, {
 				{Text: "🌍 Global", CallbackData: "all"},
 			},
 		},
