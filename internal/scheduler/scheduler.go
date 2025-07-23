@@ -71,9 +71,10 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 			panic("can't get the flag value for keyboard sent")
 		}
 		country, err := repository.GetCountry(user[i].ChatId)
-		fmt.Println("country fetched for ", user[i].UserName, " ", country)
+		fmt.Println("country fetched for ", user[i].UserName, " ", country, " ", keyBoardSent)
 		if err == nil && country == "" {
 			if !keyBoardSent {
+				fmt.Println("for user ", user[i].UserName, " we are sending the keyboard ")
 				if err = SendKeyBoard(user[i].ChatId); err != nil {
 					log.Println("ERROR SENDING KEYBOARD TO TELEGRAM", err.Error())
 					return
