@@ -68,15 +68,24 @@ func GetFromTelegramBot() []*model.InsertBotUser {
 	defer row.Close()
 	for row.Next() {
 		var id int64
-		var username string
+		var username sql.NullString
 		user := new(model.InsertBotUser)
+
 		if err = row.Scan(&id, &username); err != nil {
 			log.Println("error populating the value into variables: ", err.Error())
+			continue // Skip this iteration
 		}
+
 		user.ChatId = id
-		user.UserName = username
+		if username.Valid {
+			user.UserName = username.String
+		} else {
+			user.UserName = "" // or set a fallback like "unknown"
+		}
+
 		botUsers = append(botUsers, user)
 	}
+
 	return botUsers
 }
 
