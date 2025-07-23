@@ -119,7 +119,7 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 *%s*
 
 📍 *Location:* %s, %s, %s
-📏 *Magnitude:* %.s
+📏 *Magnitude:* %s
 🕒 *Time:* Alert Time: %s
 📡 *Depth:* %s km
 🌊🚨 *Tsunami Alert:* %s
