@@ -105,7 +105,7 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 						}
 
 						timeOccured := time.UnixMilli(data.Features[j].Properties.Time).UTC()
-						formatted := fmt.Sprintf("Alert Time: %s", timeOccured.Format("2006-01-02 15:04:05 MST"))
+						formatted := fmt.Sprintf("%s", timeOccured.Format("January 2, 2006 at 3:04 PM MST"))
 						var tsunamiAlert string
 						if data.Features[j].Properties.Tsunami == 0 {
 							tsunamiAlert = "No"
@@ -121,7 +121,7 @@ func pollingAlertUtil(user []*model.InsertBotUser, data *model.Data) {
 
 📍 *Location:* %s, %s, %s
 📏 *Magnitude:* %s
-🕒 *Time:* Alert Time: %s
+🕒 *Alert Time:* %s
 📡 *Depth:* %s km
 🌊🚨 *Tsunami Alert:* %s
 🗺️ [Click here to view location](%s)
